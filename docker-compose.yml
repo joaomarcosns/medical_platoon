@@ -1,0 +1,71 @@
+version: "3.7"
+
+services:
+  # image project
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./storage:/var/www/storage
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - laravel
+
+  # nginx
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8989:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - laravel
+
+  # MongoDB
+  mongo:
+    image: mongo:latest
+    restart: unless-stopped
+    ports:
+      - "27017:27017"  # expõe porta padrão do MongoDB no host para desenvolvimento
+    volumes:
+      - ./.docker/mongo/dbdata:/data/db
+    networks:
+      - laravel
+
+  # RabbitMQ (exemplo, descomente se precisar)
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"   # porta principal do RabbitMQ
+      - "15672:15672" # painel de gerenciamento
+    networks:
+      - laravel
+
+  # redis
+  redis:
+    image: redis:latest
+    networks:
+      - laravel
+
+  # mailhog para capturar emails no ambiente dev
+  mailhog:
+    image: mailhog/mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
