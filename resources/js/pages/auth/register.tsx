@@ -42,8 +42,8 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout title="Create an account" description="Enter your details below to create your account">
-            <Head title="Register" />
+        <AuthLayout title="Criar uma conta" description="Preencha seus dados abaixo para criar sua conta">
+            <Head title="Registrar" />
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
@@ -74,25 +74,25 @@ export default function Register() {
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                             disabled={processing}
-                            placeholder="email@example.com"
+                            placeholder="email@exemplo.com"
                         />
                         <InputError message={errors.email} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Telefone</Label>
+                        <Label htmlFor="phone">Telefone</Label>
                         <Input
                             id="phone"
-                            type="phone"
+                            type="tel"
                             required
-                            tabIndex={2}
-                            autoComplete="phone"
+                            tabIndex={3}
+                            autoComplete="tel"
                             value={data.phone}
                             onChange={(e) => setData('phone', e.target.value)}
                             disabled={processing}
                             placeholder="+55 (XX) XXXXX-XXXX"
                         />
-                        <InputError message={errors.email} />
+                        <InputError message={errors.phone} />
                     </div>
 
                     <div className="grid gap-2">
@@ -102,12 +102,12 @@ export default function Register() {
                                 id="password"
                                 type={showPassword ? 'text' : 'password'}
                                 required
-                                tabIndex={3}
+                                tabIndex={4}
                                 autoComplete="new-password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
                                 disabled={processing}
-                                placeholder="Password"
+                                placeholder="Senha"
                             />
                             <button
                                 type="button"
@@ -129,12 +129,12 @@ export default function Register() {
                                 id="password_confirmation"
                                 type={showPasswordConfirm ? 'text' : 'password'}
                                 required
-                                tabIndex={4}
+                                tabIndex={5}
                                 autoComplete="new-password"
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 disabled={processing}
-                                placeholder="Confirm password"
+                                placeholder="Confirme a senha"
                             />
                             <button
                                 type="button"
@@ -149,7 +149,7 @@ export default function Register() {
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
+                    <Button type="submit" className="mt-2 w-full" tabIndex={6} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                         Criar conta
                     </Button>
@@ -157,7 +157,7 @@ export default function Register() {
 
                 <div className="text-center text-sm text-muted-foreground">
                     Já tem uma conta?{' '}
-                    <TextLink href={route('login')} tabIndex={6}>
+                    <TextLink href={route('login')} tabIndex={7}>
                         Entrar
                     </TextLink>
                 </div>

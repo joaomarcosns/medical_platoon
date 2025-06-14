@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/
     ports:
+      - "5173:5173"
       - "8000:8000"  # porta para acessar o Laravel
       - "9000:9000"  # porta para acessar o PHP-FPM
     volumes:
