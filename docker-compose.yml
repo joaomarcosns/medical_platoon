@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www/
+    ports:
+      - "8000:8000"  # porta para acessar o Laravel
+      - "9000:9000"  # porta para acessar o PHP-FPM
     volumes:
       - ./:/var/www
       - ./storage:/var/www/storage
@@ -34,11 +37,14 @@ services:
     image: mongo:latest
     restart: unless-stopped
     ports:
-      - "27017:27017"  # expõe porta padrão do MongoDB no host para desenvolvimento
+        - "27017:27017"  # expõe porta padrão do MongoDB no host para desenvolvimento
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - ./.docker/mongo/dbdata:/data/db
+        - ./.docker/mongo/dbdata:/data/db
     networks:
-      - laravel
+        - laravel
 
   # RabbitMQ (exemplo, descomente se precisar)
   rabbitmq:

@@ -2,7 +2,10 @@
 
 use App\Models\User;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+beforeEach(function () {
+    User::truncate();
+});
+
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');

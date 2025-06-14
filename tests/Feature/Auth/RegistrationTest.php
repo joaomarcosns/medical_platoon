@@ -1,6 +1,11 @@
 <?php
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+use App\Models\User;
+
+beforeEach(function () {
+    User::truncate();
+});
+
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');

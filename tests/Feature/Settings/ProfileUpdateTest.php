@@ -2,7 +2,10 @@
 
 use App\Models\User;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+beforeEach(function () {
+    User::truncate();
+});
+
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();
