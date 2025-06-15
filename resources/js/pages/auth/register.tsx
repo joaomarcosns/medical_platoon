@@ -1,6 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle, Eye, EyeOff } from 'lucide-react'; // Importando os ícones do lucide-react
+import { LoaderCircle, Eye, EyeOff } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
+import { z } from 'zod';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -9,19 +10,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 
-type Role = 'doctor' | 'hospital_admin';
+// Schema de validação com Zod
+const registerSchema = z.object({
+    name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
+    email: z.string().email('E-mail inválido'),
+    phone: z.string().min(10, 'Telefone inválido'),
+    role: z.enum(['doctor', 'hospital_admin']),
+    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+    password_confirmation: z.string(),
+}).refine((data) => data.password === data.password_confirmation, {
+    path: ['password_confirmation'],
+    message: 'As senhas não coincidem',
+});
 
-type RegisterForm = {
-    name: string;
-    email: string;
-    phone: string;
-    role?: Role;
-    password: string;
-    password_confirmation: string;
-};
+type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
+    const { data, setData, post, processing, errors, reset, setError } = useForm<RegisterForm>({
         name: '',
         email: '',
         phone: '',
@@ -30,12 +35,24 @@ export default function Register() {
         password_confirmation: '',
     });
 
-    // Estado para mostrar/esconder senha
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        const validation = registerSchema.safeParse(data);
+
+        if (!validation.success) {
+            const fieldErrors = validation.error.flatten().fieldErrors;
+            Object.entries(fieldErrors).forEach(([key, messages]) => {
+                if (messages && messages.length > 0) {
+                    setError(key as keyof RegisterForm, messages[0]);
+                }
+            });
+            return;
+        }
+
         post(route('register'), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
@@ -88,9 +105,32 @@ export default function Register() {
                             tabIndex={3}
                             autoComplete="tel"
                             value={data.phone}
-                            onChange={(e) => setData('phone', e.target.value)}
+                            onChange={(e) => {
+                                // Máscara para telefone brasileiro: +55 (XX) XXXXX-XXXX ou +55 (XX) XXXX-XXXX
+                                let value = e.target.value.replace(/\D/g, '');
+
+                                // Remove o código do país se já estiver presente para evitar duplicidade
+                                if (value.startsWith('55')) {
+                                    value = value.slice(2);
+                                }
+
+                                if (value.length > 11) value = value.slice(0, 11);
+
+                                if (value.length > 10) {
+                                    value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                                } else if (value.length > 6) {
+                                    value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                                } else if (value.length > 2) {
+                                    value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                                } else {
+                                    value = value.replace(/^(\d*)/, '($1');
+                                }
+
+                                setData('phone', `+55 ${value}`);
+                            }}
                             disabled={processing}
-                            placeholder="+55 (XX) XXXXX-XXXX"
+                            placeholder="+55 (99) 99999-9999"
+                            maxLength={19}
                         />
                         <InputError message={errors.phone} />
                     </div>

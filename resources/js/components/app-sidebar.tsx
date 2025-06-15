@@ -13,6 +13,23 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+
+    {
+        title: 'Hospitais',
+        href: '/dashboard',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Plantões',
+        href: '/dashboard',
+        icon: LayoutGrid,
+    },
+    // isso aqui vai ser para e usuario da role user
+    {
+        title: 'Minhas Aplicações',
+        href: '/dashboard',
+        icon: LayoutGrid,
+    }
 ];
 
 export function AppSidebar() {
